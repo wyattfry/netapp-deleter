@@ -195,7 +195,7 @@ def delete_netapp_resources(netapp_account_id):
         logger.error(f"{RED}Error processing NetApp account '{netapp_account_id}': {str(e)}{RST}")
         raise  # Re-raise to trigger early termination
 
-def list_and_delete_netapp_accounts(skip_confirmation=False):
+def list_and_delete_netapp_accounts(skip_confirmation: bool, max_workers: int):
     logger.info("Fetching and deleting NetApp accounts...")
     try:
         # Get all NetApp accounts directly
@@ -214,7 +214,7 @@ def list_and_delete_netapp_accounts(skip_confirmation=False):
                 return
         
         # Delete accounts in parallel
-        with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
             future_to_account = {
                 executor.submit(delete_netapp_resources, account.id): account 
                 for account in netapp_accounts
@@ -237,8 +237,9 @@ def list_and_delete_netapp_accounts(skip_confirmation=False):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Delete NetApp accounts and their resources')
-    parser.add_argument('-y', '--yes', action='store_true', help='Skip confirmation prompt')
-    parser.add_argument('-v', '--verbose', action='store_true', help='Enable verbose logging')
+    parser.add_argument('-y', '--yes', action='store_true', help='Skip confirmation prompt', default=False)
+    parser.add_argument('-v', '--verbose', action='store_true', help='Enable verbose logging', default=False)
+    parser.add_argument('-w', '--workers', help='The max number of concurrent works to allow', default=5)
     args = parser.parse_args()
 
     setup_logging(args.verbose)
@@ -254,7 +255,7 @@ if __name__ == "__main__":
         netapp_client = NetAppManagementClient(credential, subscription_id)
         resource_client = ResourceManagementClient(credential, subscription_id)
 
-        list_and_delete_netapp_accounts(skip_confirmation=args.yes)
+        list_and_delete_netapp_accounts(args.yes, args.workers)
     except Exception as e:
         logger.error(f"{RED}Script terminated due to error: {str(e)}{RST}")
         exit(1) 
