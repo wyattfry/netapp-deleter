@@ -22,7 +22,7 @@ pip install -r requirements.txt
 ./netapp_deleter_cli.py
 ```
 
-## Options
+## Usage
 
 - `-y`: don't prompt, just delete them all
 - `-v`: verbose mode
@@ -40,3 +40,4 @@ The project is organized into the following modules:
   - `resource_deleter.py`: NetApp resource deletion logic
 - `netapp_deleter_cli.py`: Command-line interface
 - `test_app.py`: Test suite
+
