@@ -205,10 +205,8 @@ def list_and_delete_netapp_accounts(skip_confirmation=False):
         if not netapp_accounts:
             logger.info("No NetApp accounts found in subscription.")
             return
-        
-        account_names = [x.name for x in netapp_accounts]
 
-        logger.info(f"Found {len(netapp_accounts)} NetApp accounts to delete:\n{"\n".join([x.name for x in netapp_accounts], )}")        
+        logger.info(f"Found {len(netapp_accounts)} NetApp accounts to delete: {', '.join([x.name for x in netapp_accounts])}")        
         if not skip_confirmation:
             response = input(f"This will delete all {len(netapp_accounts)} NetApp accounts in your subscription. Are you sure you want to proceed? y/N: ")
             if response.lower() != 'y':
