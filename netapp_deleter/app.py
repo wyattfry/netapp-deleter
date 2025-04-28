@@ -4,7 +4,7 @@ Main application module for the NetApp deleter.
 
 import os
 import concurrent.futures
-from .logging_utils import logger, RED, setup_logging
+from .logging_utils import logger, RED, RST, setup_logging
 from .azure_utils import get_azure_clients
 from .resource_deleter import delete_netapp_resources
 

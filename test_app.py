@@ -1,4 +1,3 @@
-import pytest
 from unittest.mock import patch, MagicMock
 from netapp_deleter.logging_utils import setup_logging, logger
 from netapp_deleter.azure_utils import get_subscription_id, get_azure_clients
