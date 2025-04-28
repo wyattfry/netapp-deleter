@@ -20,7 +20,17 @@ pip install -f requirements.txt
 ./app.py
 ```
 
-## Options
+## Usage
 
-- `-y`: don't prompt, just delete them all
-- `-v`: verbose mode
+```
+usage: app.py [-h] [-y] [-v] [-w WORKERS]
+
+Delete NetApp accounts and their resources
+
+options:
+  -h, --help            show this help message and exit
+  -y, --yes             Skip confirmation prompt
+  -v, --verbose         Enable verbose logging
+  -w, --workers WORKERS
+                        The max number of concurrent works to allow
+```
