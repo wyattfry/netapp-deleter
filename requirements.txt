@@ -1,3 +1,4 @@
+azure-cli-core
 azure-identity
 azure-mgmt-netapp
 azure-mgmt-resource
