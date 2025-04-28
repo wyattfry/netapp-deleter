@@ -44,4 +44,4 @@ def get_azure_clients():
     subscription_id = get_subscription_id()
     netapp_client = NetAppManagementClient(credential, subscription_id)
     resource_client = ResourceManagementClient(credential, subscription_id)
-    return netapp_client, resource_client 
+    return netapp_client, resource_client

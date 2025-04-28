@@ -10,7 +10,7 @@ from .logging_utils import logger, RED, GRN, RST
 def delete_netapp_resources(netapp_client, resource_client, netapp_account_id):
     """
     Delete all resources associated with a NetApp account.
-    
+
     Args:
         netapp_client: The NetApp management client
         resource_client: The resource management client
@@ -33,22 +33,33 @@ def delete_netapp_resources(netapp_client, resource_client, netapp_account_id):
                     resource_group_name, netapp_account_name, pool.name
                 )
                 for volume in volumes:
-                    logger.info(f"  Deleting volume '{volume.name}' in pool '{pool.name}'...")
+                    logger.info(
+                        f"  Deleting volume '{volume.name}' in pool '{pool.name}'..."
+                    )
                     try:
                         poller = netapp_client.volumes.begin_delete(
-                            resource_group_name, netapp_account_name, pool.name, volume.name
+                            resource_group_name,
+                            netapp_account_name,
+                            pool.name,
+                            volume.name,
                         )
                         poller.result()  # Wait for deletion to complete
-                        logger.info(f"{GRN}Successfully deleted volume '{volume.name}'{RST}")
+                        logger.info(
+                            f"{GRN}Successfully deleted volume '{volume.name}'{RST}"
+                        )
                     except Exception as e:
-                        logger.error(f"{RED}Error deleting volume '{volume.name}': {str(e)}{RST}")
+                        logger.error(
+                            f"{RED}Error deleting volume '{volume.name}': {str(e)}{RST}"
+                        )
                         raise  # Re-raise to trigger early termination
         except Exception as e:
             logger.error(f"{RED}Error listing/deleting volumes: {str(e)}{RST}")
             raise  # Re-raise to trigger early termination
 
         # Delete backup vaults
-        logger.info(f"Deleting backup vaults in NetApp account '{netapp_account_name}'...")
+        logger.info(
+            f"Deleting backup vaults in NetApp account '{netapp_account_name}'..."
+        )
         try:
             # List backup vaults using the correct API
             backup_vaults = netapp_client.backup_vaults.list_by_net_app_account(
@@ -71,7 +82,9 @@ def delete_netapp_resources(netapp_client, resource_client, netapp_account_id):
                     )
 
                     if backups:
-                        logger.info(f"Found {len(backups)} backups to delete in vault '{vault_name}'")
+                        logger.info(
+                            f"Found {len(backups)} backups to delete in vault '{vault_name}'"
+                        )
                         for backup in backups:
                             backup_name = backup.name.split("/")[-1]
                             logger.info(f"Deleting backup '{backup_name}'...")
@@ -83,7 +96,9 @@ def delete_netapp_resources(netapp_client, resource_client, netapp_account_id):
                                     backup_name,
                                 )
                                 poller.result()  # Wait for deletion to complete
-                                logger.info(f"{GRN}Successfully deleted backup '{backup_name}'{RST}")
+                                logger.info(
+                                    f"{GRN}Successfully deleted backup '{backup_name}'{RST}"
+                                )
                             except Exception as e:
                                 logger.error(
                                     f"{RED}Error deleting backup '{backup_name}': {str(e)}{RST}"
@@ -102,7 +117,9 @@ def delete_netapp_resources(netapp_client, resource_client, netapp_account_id):
 
                         # Verify the vault is actually deleted
                         try:
-                            print(f"Verifying netapp has disassociated with the vault...")
+                            print(
+                                f"Verifying netapp has disassociated with the vault..."
+                            )
                             netapp_client.backup_vaults.get(
                                 resource_group_name, netapp_account_name, vault_name
                             )
@@ -113,7 +130,9 @@ def delete_netapp_resources(netapp_client, resource_client, netapp_account_id):
                                 f"Backup vault '{vault_name}' deletion failed - resource still exists"
                             )
                         except ResourceNotFoundError:
-                            logger.info(f"{GRN}Successfully deleted backup vault '{vault_name}'{RST}")
+                            logger.info(
+                                f"{GRN}Successfully deleted backup vault '{vault_name}'{RST}"
+                            )
                     except Exception as e:
                         logger.error(
                             f"{RED}Error deleting backup vault '{vault_name}': {str(e)}{RST}"
@@ -141,7 +160,9 @@ def delete_netapp_resources(netapp_client, resource_client, netapp_account_id):
                     resource_group_name, netapp_account_name
                 )
                 poller.result()  # Wait for deletion to complete
-                logger.info(f"{GRN}Successfully deleted NetApp account '{netapp_account_name}'{RST}")
+                logger.info(
+                    f"{GRN}Successfully deleted NetApp account '{netapp_account_name}'{RST}"
+                )
                 break  # Success, exit retry loop
             except Exception as e:
                 error_str = str(e)
@@ -164,11 +185,17 @@ def delete_netapp_resources(netapp_client, resource_client, netapp_account_id):
         try:
             poller = resource_client.resource_groups.begin_delete(resource_group_name)
             poller.result()  # Wait for deletion to complete
-            logger.info(f"{GRN}Successfully deleted resource group '{resource_group_name}'{RST}")
+            logger.info(
+                f"{GRN}Successfully deleted resource group '{resource_group_name}'{RST}"
+            )
         except Exception as e:
-            logger.error(f"{RED}Error deleting resource group '{resource_group_name}': {str(e)}{RST}")
+            logger.error(
+                f"{RED}Error deleting resource group '{resource_group_name}': {str(e)}{RST}"
+            )
             raise  # Re-raise to trigger early termination
 
     except Exception as e:
-        logger.error(f"{RED}Error processing NetApp account '{netapp_account_id}': {str(e)}{RST}")
-        raise  # Re-raise to trigger early termination 
+        logger.error(
+            f"{RED}Error processing NetApp account '{netapp_account_id}': {str(e)}{RST}"
+        )
+        raise  # Re-raise to trigger early termination

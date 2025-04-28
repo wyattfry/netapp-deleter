@@ -34,4 +34,4 @@ def setup_logging(verbose):
         logging.getLogger("azure.core.pipeline.policies.http_logging_policy").setLevel(
             logging.WARNING
         )
-        logging.getLogger("azure.identity").setLevel(logging.WARNING) 
+        logging.getLogger("azure.identity").setLevel(logging.WARNING)

@@ -9,10 +9,12 @@ from .azure_utils import get_azure_clients
 from .resource_deleter import delete_netapp_resources
 
 
-def list_and_delete_netapp_accounts(netapp_client, resource_client, skip_confirmation: bool, max_workers: int):
+def list_and_delete_netapp_accounts(
+    netapp_client, resource_client, skip_confirmation: bool, max_workers: int
+):
     """
     List and delete all NetApp accounts in the current subscription.
-    
+
     Args:
         netapp_client: The NetApp management client
         resource_client: The resource management client
@@ -43,7 +45,9 @@ def list_and_delete_netapp_accounts(netapp_client, resource_client, skip_confirm
         # Delete accounts in parallel
         with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
             future_to_account = {
-                executor.submit(delete_netapp_resources, netapp_client, resource_client, account.id): account
+                executor.submit(
+                    delete_netapp_resources, netapp_client, resource_client, account.id
+                ): account
                 for account in netapp_accounts
             }
 
@@ -52,7 +56,9 @@ def list_and_delete_netapp_accounts(netapp_client, resource_client, skip_confirm
                 try:
                     future.result()  # This will raise any exceptions that occurred
                 except Exception as e:
-                    logger.error(f"{RED}Failed to delete NetApp account {account.name}: {str(e)}{RST}")
+                    logger.error(
+                        f"{RED}Failed to delete NetApp account {account.name}: {str(e)}{RST}"
+                    )
                     # Cancel all pending futures
                     for f in future_to_account:
                         f.cancel()
@@ -67,15 +73,29 @@ def main():
     """Main entry point for the application."""
     import argparse
 
-    parser = argparse.ArgumentParser(description="Delete NetApp accounts and their resources")
-    parser.add_argument(
-        "-y", "--yes", action="store_true", help="Skip confirmation prompt", default=False
+    parser = argparse.ArgumentParser(
+        description="Delete NetApp accounts and their resources"
     )
     parser.add_argument(
-        "-v", "--verbose", action="store_true", help="Enable verbose logging", default=False
+        "-y",
+        "--yes",
+        action="store_true",
+        help="Skip confirmation prompt",
+        default=False,
     )
     parser.add_argument(
-        "-w", "--workers", type=int, help="The max number of concurrent workers to allow", default=5
+        "-v",
+        "--verbose",
+        action="store_true",
+        help="Enable verbose logging",
+        default=False,
+    )
+    parser.add_argument(
+        "-w",
+        "--workers",
+        type=int,
+        help="The max number of concurrent workers to allow",
+        default=5,
     )
     args = parser.parse_args()
 
@@ -89,11 +109,13 @@ def main():
         # Initialize credentials and clients
         netapp_client, resource_client = get_azure_clients()
 
-        list_and_delete_netapp_accounts(netapp_client, resource_client, args.yes, args.workers)
+        list_and_delete_netapp_accounts(
+            netapp_client, resource_client, args.yes, args.workers
+        )
     except Exception as e:
         logger.error(f"{RED}Script terminated due to error: {str(e)}{RST}")
         exit(1)
 
 
 if __name__ == "__main__":
-    main() 
+    main()
